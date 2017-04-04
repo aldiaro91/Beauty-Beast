@@ -365,11 +365,14 @@
 		
 		
 		function filterDatetime() {
+			var dateEmpty = false;
+			var tempString = $(this).val();
+			if (tempString === '') dateEmpty = true;
+			var tempArray = tempString.split("-");
 			if ($(this).hasClass("filterDatetimeFrom")) {
-				var tempString = $(this).val().split("-");
-				var dateMin = new Date(tempString[2], tempString[1]-1, tempString[0]);
+				var dateMin = new Date(tempArray[2], tempArray[1]-1, tempArray[0]);
 				for (var i = 0; i < displayData.length; i++) {
-					if (displayData[i].dateOfBirthParsed >= dateMin) {
+					if (displayData[i].dateOfBirthParsed >= dateMin || dateEmpty) {
 						displayData[i].displayByFilter['dateOfBirthFrom'] = true;
 						var displayTemp = true;
 						for (var property in displayData[i].displayByFilter) {
@@ -387,10 +390,9 @@
 				}
 			}
 			else if ($(this).hasClass("filterDatetimeTo")) {
-				var tempString = $(this).val().split("-");
-				var dateMax = new Date(tempString[2], tempString[1]-1, tempString[0]);
+				var dateMax = new Date(tempArray[2], tempArray[1]-1, tempArray[0]);
 				for (var i = 0; i < displayData.length; i++) {
-					if (displayData[i].dateOfBirthParsed <= dateMax) {
+					if (displayData[i].dateOfBirthParsed <= dateMax || dateEmpty) {
 						displayData[i].displayByFilter['dateOfBirthTo'] = true;
 						var displayTemp = true;
 						for (var property in displayData[i].displayByFilter) {
