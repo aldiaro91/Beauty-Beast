@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+<head>
+	<title>The Beauty or the Beast</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<style>
+		#tableTitle {
+			margin-bottom: 80px;
+		}
+		
+		th, td {
+			border: 1px #e7ecf1 solid !important;
+			border-collapse: collapse;
+		}
+		
+		thead {
+			border-bottom: 3px #e7ecf1 solid !important;
+		}
+		
+		thead th {
+			vertical-align: top !important;
+		}
+		
+		th.sortable {
+			cursor: pointer;
+		}
+		
+		.filterInput {
+			border-radius: 0px;
+		}
+		
+		#functionSelect {
+			min-width: 130px;
+		}
+		
+		.datepicker {
+			width: 210px;
+			min-width: 210px;
+		}
+		
+		.datepicker input {
+			max-width: 160px;
+			margin-left: 8px;
+			display: inline-block;
+		}
+		
+		.datepicker input:first-child {
+			margin-bottom: 8px;
+		}
+		
+		.glyphicon {
+			float: right;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="container">
+		<h2 class="text-center" id="tableTitle">The Beauty or the Beast - lista pracowników</h2>        
+		<table class="table table-striped">
+		<thead>
+			<!-- COLUMN NAMES -->
+			<tr>
+				<th class="sortable" data-columnName="id" id="id">ID<span class="glyphicon" aria-hidden="true"></span></th>
+				<th class="sortable" data-columnName="firstName">Imię<span class="glyphicon" aria-hidden="true"></span></th>
+				<th class="sortable" data-columnName="lastName">Nazwisko<span class="glyphicon" aria-hidden="true"></span></th>
+				<th class="sortable" data-columnName="dateOfBirth">Data urodzenia<span class="glyphicon" aria-hidden="true"></span></th>
+				<th class="sortable" data-columnName="function">Funkcja<span class="glyphicon" aria-hidden="true"></span></th>
+				<th class="sortable" data-columnName="experience">Doświadczenie<span class="glyphicon" aria-hidden="true"></span></th>
+			</tr>
+			<!-- TABLE FILTERS -->
+			<tr>
+				<th><input class="form-control filterInput filterNumber" data-columnName="id" type="search" value=""></th>
+				<th><input class="form-control filterInput filterString" data-columnName="firstName" type="search" value=""></th>
+				<th><input class="form-control filterInput filterString" data-columnName="lastName" type="search" value=""></th>
+				<th class="datepicker">
+					od<input class="form-control filterInput filterDatetimeFrom inputDatepicker" data-columnName="dateOfBirth" type="text" value="">
+					do<input class="form-control filterInput filterDatetimeTo inputDatepicker" data-columnName="dateOfBirth" type="text" value="">
+				</th>
+				<th>
+					<select class="form-control filterInput filterSelect" data-columnName="function" id="functionSelect">
+						<option>Wszystkie</option>
+						<option>kamerdyner</option>
+						<option>pokojówka</option>
+						<option>lokaj</option>
+						<option>kucharka</option>
+					</select>
+				</th>
+				<th><input class="form-control filterInput filterNumber" data-columnName="experience" type="search" value=""></th>
+			</tr>
+			<!-- END TABLE FILTERS -->
+		</thead>
+		<tbody>
+		</tbody>
+		</table>
+		<div class="text-center" id="paginationContainer">
+			<ul class="pagination">
+			</ul>
+		</div>
+	</div>
+
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script>
+		var originalData = [
+			{
+				"id":1,
+				"firstName":"Dobromir",
+				"lastName":"Sprytny",
+				"dateOfBirth":"1.7.1990 11:35",
+				"function":"kamerdyner",
+				"experience":4
+			},
+			{
+				"id":2,
+				"firstName":"Marianna",
+				"lastName":"Prostota",
+				"dateOfBirth":"28.10.1976 2:15",
+				"function":"pokojówka",
+				"experience":12
+			},
+			{
+				"id":4,
+				"firstName":"Helga",
+				"lastName":"Uczynna",
+				"dateOfBirth":"4.02.1976 14:37",
+				"function":"pokojówka",
+				"experience":12
+			},
+			{
+				"id":3,
+				"firstName":"Walerian",
+				"lastName":"Szybki",
+				"dateOfBirth":"03.01.1986 23:10",
+				"function":"kamerdyner",
+				"experience":10
+			},
+			{
+				"id":5,
+				"firstName":"Krzysztof",
+				"lastName":"Klucznik",
+				"dateOfBirth":"10.10.1986 18:00",
+				"function":"lokaj",
+				"experience":3
+			},
+			{
+				"id":6,
+				"firstName":"Konstancja",
+				"lastName":"Urodziwa",
+				"dateOfBirth":"29.02.1936 13:33",
+				"function":"kucharka",
+				"experience":8
+			},
+			{
+				"id":7,
+				"firstName":"Kornelia",
+				"lastName":"Wstydliwa",
+				"dateOfBirth":"19.02.1973 23:55",
+				"function":"pokojówka",
+				"experience":8
+			},
+			{
+				"id":8,
+				"firstName":"Władysława",
+				"lastName":"Dobrotliwa",
+				"dateOfBirth":"29.12.1977 18:25",
+				"function":"pokojówka",
+				"experience":8
+			},
+			{
+				"id":9,
+				"firstName":"Mirosław",
+				"lastName":"Podstępny",
+				"dateOfBirth":"09.12.1972 17:35",
+				"function":"kamerdyner",
+				"experience":8
+			},
+			{
+				"id":10,
+				"firstName":"Walerian",
+				"lastName":"Drażliwy",
+				"dateOfBirth":"29.03.1980 15:36",
+				"function":"lokaj",
+				"experience":8
+			},
+			{
+				"id":11,
+				"firstName":"Katarzyna",
+				"lastName":"Krasna",
+				"dateOfBirth":"05.05.1983 01:15",
+				"function":"pokojówka",
+				"experience":8
+			},
+			{
+				"id":12,
+				"firstName":"Urszula",
+				"lastName":"Markotna",
+				"dateOfBirth":"06.04.1981 12:35",
+				"function":"pokojówka",
+				"experience":8
+			}
+		];
+		
+		
+		
+		window.onload = initPage;
+		function initPage() {
+			window.displayData = [];
+			for (var i = 0; i < originalData.length; i++) {
+				displayData[i] = originalData[i];
+				displayData[i].display = true;
+				displayData[i].displayByFilter = {'id': true, 'firstName': true, 'lastName': true, 'dateOfBirthFrom': true, 'dateOfBirthTo': true, 'function': true, 'experience': true};
+				
+				// calculate and store date of birth in "datetime" format (for sorting / filtering purposes)
+				var temp = displayData[i].dateOfBirth.split(" ");
+				var dateArray = temp[0].split(".");
+				var timeArray = temp[1].split(":");
+				displayData[i].dateOfBirthParsed = new Date(parseInt(dateArray[2]), parseInt(dateArray[1])-1, parseInt(dateArray[0]), parseInt(timeArray[0]), parseInt(timeArray[1]));
+			}
+			
+			window.appState = {
+				columns: ['id', 'firstName', 'lastName', 'dateOfBirth', 'function', 'experience'],
+				rowsPerPage: 5,
+				currentPage: 1,
+				numPagesTotal: 0 // will be calculated inside reloadPagination()
+			}
+			
+			// assign handlers, display table data
+			$(".filterString, .filterNumber").keyup(filterNumberOrString);
+			$(".filterSelect").change(filterNumberOrString);
+			$(".inputDatepicker").datepicker({
+				changeMonth: true,
+				changeYear: true,
+				yearRange: "-120:+0" // last 120 years
+			});
+			$(".inputDatepicker").datepicker("option", "dateFormat", 'dd-mm-yy');
+			$(".filterDatetimeFrom, .filterDatetimeTo").change(filterDatetime);
+			$("th.sortable").click(sortNumberStringDatetime);
+			$("#id").click();
+			reloadPagination();
+		}
+		
+		
+		// called when one of pagination buttons is clicked
+		function paginationHandler() {
+			var buttonText = $(this).find("a").text();
+			
+			if (buttonText === '<<<') appState.currentPage = 1;
+			else if (buttonText === '>>>') appState.currentPage = appState.numPagesTotal
+			else appState.currentPage = parseInt(buttonText);
+			
+			reloadPagination();
+			reloadRows();
+		}
+		
+		
+		function reloadRows() {
+			var appendString = '';
+			var rowsAppended = 0;
+			var offsetNeeded = appState.rowsPerPage * (appState.currentPage - 1);
+			var offsetDone = 0;
+			for (var i = 0; i < displayData.length; i++) {
+				if (displayData[i].display) {
+					if (offsetDone < offsetNeeded) {
+						offsetDone++;
+					}
+					else {
+						appendString+= '<tr>';
+						for (var j = 0; j < appState.columns.length; j++) {
+							appendString+= '<td>'+displayData[i][appState.columns[j]]+'</td>';
+						}
+						appendString+='</tr>';
+						
+						rowsAppended++;
+						if (rowsAppended >= appState.rowsPerPage) break;
+					}
+				}
+			}
+			$("tbody").html(appendString);
+		}
+		
+		
+		function reloadPagination() {
+			var numRowsTotal = 0;
+			for (var i = 0; i < displayData.length; i++) {
+				if (displayData[i].display) numRowsTotal++;
+			}
+			appState.numPagesTotal = Math.ceil(numRowsTotal / appState.rowsPerPage); 
+			
+			var paginationString = '';
+			for (var i = appState.currentPage - 2; i <= appState.currentPage + 2; i++) {
+				if (i >= 1 && i <= appState.numPagesTotal) {
+					paginationString+= '<li';
+					if (i === appState.currentPage) paginationString+= ' class="active"';
+					paginationString+= '><a href="#">'+i+'</a></li>';
+				}
+			}
+			if (appState.currentPage > 3) paginationString = '<li><a href="#"><<<</a></li>'+paginationString;
+			if (appState.currentPage + 2 < appState.numPagesTotal) paginationString+= '<li><a href="#">>>></a></li>';
+			
+			$("#paginationContainer ul").html(paginationString);
+			$("#paginationContainer li").click(paginationHandler);
+		}
+		
+		
+		function sortNumberStringDatetime() {
+			var columnName = $(this).attr("data-columnName");
+			if (columnName === 'dateOfBirth') columnName = 'dateOfBirthParsed';
+			if ($(this).find("span").hasClass("glyphicon-triangle-top")) var sortMode = 'desc';
+			else var sortMode = 'asc';
+			
+			$("th span").removeClass("glyphicon-triangle-top glyphicon-triangle-bottom");
+			if (sortMode === 'asc') {
+				$(this).find("span").addClass("glyphicon-triangle-top");
+				var compare = function(a,b) {
+					if (a[columnName] < b[columnName]) return -1;
+					if (a[columnName] > b[columnName]) return 1;
+					return 0;
+				}
+			}
+			else if (sortMode === 'desc') {
+				$(this).find("span").addClass("glyphicon-triangle-bottom");
+				var compare = function(b,a) {
+					if (a[columnName] < b[columnName]) return -1;
+					if (a[columnName] > b[columnName]) return 1;
+					return 0;
+				}
+			}
+
+			displayData.sort(compare);
+			reloadRows();
+		}
+		
+		
+		function filterNumberOrString() {
+			var columnName = $(this).attr("data-columnName");
+			var searchString = $(this).val().toLowerCase();
+			if (columnName === 'function' && searchString === 'wszystkie') searchString = '';
+			for (var i = 0; i < displayData.length; i++) {
+				if (displayData[i][columnName].toString().toLowerCase().indexOf(searchString) > -1) {
+					displayData[i].displayByFilter[columnName] = true;
+					var displayTemp = true;
+					for (var property in displayData[i].displayByFilter) {
+						if (displayData[i].displayByFilter.hasOwnProperty(property) && !displayData[i].displayByFilter[property]) {
+							displayTemp = false;
+							break;
+						}
+					}
+					displayData[i].display = displayTemp;
+				}
+				else {
+					displayData[i].displayByFilter[columnName] = false;
+					displayData[i].display = false;
+				}
+			}
+			appState.currentPage = 1;
+			reloadRows();
+			reloadPagination();
+		}
+		
+		
+		function filterDatetime() {
+			if ($(this).hasClass("filterDatetimeFrom")) {
+				var tempString = $(this).val().split("-");
+				var dateMin = new Date(tempString[2], tempString[1]-1, tempString[0]);
+				for (var i = 0; i < displayData.length; i++) {
+					if (displayData[i].dateOfBirthParsed >= dateMin) {
+						displayData[i].displayByFilter['dateOfBirthFrom'] = true;
+						var displayTemp = true;
+						for (var property in displayData[i].displayByFilter) {
+							if (displayData[i].displayByFilter.hasOwnProperty(property) && !displayData[i].displayByFilter[property]) {
+								displayTemp = false;
+								break;
+							}
+						}
+						displayData[i].display = displayTemp;
+					}
+					else {
+						displayData[i].displayByFilter['dateOfBirthFrom'] = false;
+						displayData[i].display = false;
+					}
+				}
+			}
+			else if ($(this).hasClass("filterDatetimeTo")) {
+				var tempString = $(this).val().split("-");
+				var dateMax = new Date(tempString[2], tempString[1]-1, tempString[0]);
+				for (var i = 0; i < displayData.length; i++) {
+					if (displayData[i].dateOfBirthParsed <= dateMax) {
+						displayData[i].displayByFilter['dateOfBirthTo'] = true;
+						var displayTemp = true;
+						for (var property in displayData[i].displayByFilter) {
+							if (displayData[i].displayByFilter.hasOwnProperty(property) && !displayData[i].displayByFilter[property]) {
+								displayTemp = false;
+								break;
+							}
+						}
+						displayData[i].display = displayTemp;
+					}
+					else {
+						displayData[i].displayByFilter['dateOfBirthTo'] = false;
+						displayData[i].display = false;
+					}
+				}
+			}
+			appState.currentPage = 1;
+			reloadRows();
+			reloadPagination();
+		}
+	</script>
+</body>
+</html>
